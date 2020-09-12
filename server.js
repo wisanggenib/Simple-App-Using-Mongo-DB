@@ -12,15 +12,9 @@ app.use(bodyParser.urlencoded({
     extended: true
 }))
 
-// app.get('/', (req, res) => {
-//     res.sendFile(__dirname + '/index.html')
-//     // Note: __dirname is the current directory you're in. Try logging it and see what you get!
-//     // Mine was '/Users/zellwk/Projects/demo-repos/crud-express-mongo' for this app.
-// })
+app.use(express.static('public'))
+app.use(bodyParser.json())
 
-// app.post('/quotes', (req, res) => {
-//     console.log(req.body)
-// })
 
 
 const connectionString = 'mongodb+srv://root:passwordhere@cluster0.5zx6q.mongodb.net/test?retryWrites=true&w=majority'
@@ -31,6 +25,7 @@ MongoClient.connect(connectionString, {
         console.log('Connected to Database')
         const db = client.db('test')
         const quotesCollection = db.collection('quotes')
+
         app.post('/quotes', (req, res) => {
             quotesCollection.insertOne(req.body)
                 .then(result => {
@@ -40,10 +35,31 @@ MongoClient.connect(connectionString, {
         })
         app.get('/', (req, res) => {
             db.collection('quotes').find().toArray()
-              .then(results => {
-                res.render('index.ejs', { quotes: results })
-              })
-              .catch(/* ... */)
-          })
+                .then(results => {
+                    res.render('index.ejs', {
+                        quotes: results
+                    })
+                })
+                .catch( /* ... */ )
+        })
+        app.put('/quotes', (req, res) => {
+            quotesCollection.findOneAndUpdate({
+                    name: 'Yoda'
+                }, {
+                    $set: {
+                        name: req.body.name,
+                        quote: req.body.quote
+                    }
+                }, {
+                    //if true = insert new value
+                    //if false = Not inserting new value 
+                    upsert: false
+                })
+                .then(result => {
+                    res.json('Success')
+                })
+                .catch(error => console.error(error))
+        })
+
     })
     .catch(error => console.error(error))
