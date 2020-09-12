@@ -32,10 +32,17 @@ MongoClient.connect(connectionString, {
         const quotesCollection = db.collection('quotes')
         app.post('/quotes', (req, res) => {
             quotesCollection.insertOne(req.body)
-              .then(result => {
-                res.redirect('/')
-              })
-              .catch(error => console.error(error))
-          })
+                .then(result => {
+                    res.redirect('/')
+                })
+                .catch(error => console.error(error))
+        })
+        app.get('/', (req, res) => {
+            db.collection('quotes').find().toArray()
+                .then(results => {
+                    console.log(results)
+                })
+                .catch(error => console.error(error))
+        })
     })
     .catch(error => console.error(error))
