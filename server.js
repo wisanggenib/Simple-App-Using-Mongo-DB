@@ -60,6 +60,18 @@ MongoClient.connect(connectionString, {
                 })
                 .catch(error => console.error(error))
         })
+        app.delete('/quotes', (req, res) => {
+            quotesCollection.deleteOne({
+                    name: req.body.name
+                })
+                .then(result => {
+                    if (result.deletedCount === 0) {
+                      return res.json('No quote to delete')
+                    }
+                    res.json(`Deleted Darth Vadar's quote`)
+                  })
+                  .catch(error => console.error(error))
+        })
 
     })
     .catch(error => console.error(error))
