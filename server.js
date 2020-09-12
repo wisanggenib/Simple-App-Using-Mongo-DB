@@ -2,6 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const MongoClient = require('mongodb').MongoClient
 const app = express();
+app.set('view engine', 'ejs')
 
 app.listen(3000, function () {
     console.log('listening on 3000')
@@ -11,11 +12,11 @@ app.use(bodyParser.urlencoded({
     extended: true
 }))
 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html')
-    // Note: __dirname is the current directory you're in. Try logging it and see what you get!
-    // Mine was '/Users/zellwk/Projects/demo-repos/crud-express-mongo' for this app.
-})
+// app.get('/', (req, res) => {
+//     res.sendFile(__dirname + '/index.html')
+//     // Note: __dirname is the current directory you're in. Try logging it and see what you get!
+//     // Mine was '/Users/zellwk/Projects/demo-repos/crud-express-mongo' for this app.
+// })
 
 // app.post('/quotes', (req, res) => {
 //     console.log(req.body)
@@ -39,10 +40,10 @@ MongoClient.connect(connectionString, {
         })
         app.get('/', (req, res) => {
             db.collection('quotes').find().toArray()
-                .then(results => {
-                    console.log(results)
-                })
-                .catch(error => console.error(error))
-        })
+              .then(results => {
+                res.render('index.ejs', { quotes: results })
+              })
+              .catch(/* ... */)
+          })
     })
     .catch(error => console.error(error))
